@@ -91,8 +91,5 @@ Este documento presenta una revisión inicial de las variables del dataset RT-Io
 | `fwd_last_window_size` | Integer | Último tamaño de ventana TCP observado en dirección origen a destino. | Puede ayudar a identificar cambios en el control de flujo durante la conexión. |
 | `Attack_type` | Categorical | Tipo de tráfico registrado, por ejemplo tráfico normal o tipo específico de ataque. | Es la variable objetivo del dataset y se usa para entrenar modelos de clasificación. |
 | `id` | Integer | Identificador único o índice del registro dentro del dataset. | Sirve para identificar registros, pero normalmente no se usa como variable predictora en el modelo. |
-| `fwd_last_window_size` | Entero | Último tamaño de ventana TCP observado en dirección origen a destino. | Puede ayudar a identificar cambios en el control de flujo durante la conexión. |
-| `Attack_type` | Categórica | Tipo de tráfico registrado, por ejemplo tráfico normal o tipo específico de ataque. | Es la variable objetivo del dataset y se usa para entrenar modelos de clasificación. |
-| `id` | Entero | Identificador único o índice del registro dentro del dataset. | Sirve para identificar registros, pero normalmente no se usa como variable predictora en el modelo. |
 
 
