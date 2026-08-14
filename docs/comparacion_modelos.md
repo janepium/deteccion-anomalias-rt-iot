@@ -137,14 +137,33 @@ Sin embargo, su tiempo de predicción fue el mayor: **25.088361 s**.
 
 ## 6. Conclusiones
 
-La comparación muestra que los modelos basados en árboles obtuvieron el mejor desempeño.
+Los resultados obtenidos no aparecen de manera aleatoria. Se explican principalmente por cómo quedó construido nuestro dataset después de la limpieza, por las características de las variables que se conservaron y por las diferencias entre los algoritmos utilizados.
 
-Random Forest fue el modelo con mejores resultados generales y superó ligeramente al Decision Tree baseline.
+Durante el proceso de limpieza se redujo considerablemente la cantidad de variables redundantes, pero se conservaron características relacionadas directamente con el comportamiento del tráfico de red, como `flow_duration`, cantidad de paquetes, `flow_pkts_per_sec`, variables de payload, flags TCP y tamaños de ventana. Estas variables contienen información útil para diferenciar los diferentes tipos de tráfico y ataques presentes en `Attack_type`.
 
-KNN presentó un buen desempeño, pero su tiempo de predicción fue demasiado alto en comparación con los demás modelos.
+Los modelos basados en árboles, especialmente **Decision Tree y Random Forest**, se benefician de estas características porque pueden encontrar relaciones no lineales entre las variables. Conceptualmente, un modelo puede aprender reglas como:
 
-Logistic Regression obtuvo un desempeño inferior, especialmente en F1-Macro.
+```text
+Si la cantidad de paquetes por segundo es alta
+y ciertos flags TCP aparecen con determinada frecuencia
+y la duración del flujo se encuentra dentro de cierto rango,
+entonces aumenta la probabilidad de pertenecer a una determinada clase.
+```
 
-Por lo tanto, **Random Forest se selecciona como candidato principal para la siguiente etapa**, donde se realizará validación y ajuste de hiperparámetros.
+Este tipo de relaciones es difícil de representar mediante un modelo estrictamente lineal, pero puede ser aprendido de manera natural por los árboles de decisión.
 
-XGBoost no fue ejecutado debido a las limitaciones de tiempo del proyecto, aunque su librería estaba disponible.
+Esto ayuda a explicar por qué los modelos basados en árboles obtuvieron los mejores resultados. **Random Forest** fue el modelo con mejor desempeño general, alcanzando un Accuracy de **0.996184**, un Recall de **0.987651** y un F1-Macro de **0.974786**. Además, superó ligeramente al Decision Tree baseline, que obtuvo un F1-Macro de **0.971244**.
+
+La mejora de Random Forest puede explicarse por su utilización de múltiples árboles, lo que permite combinar diferentes reglas de decisión y obtener un modelo más robusto que un único árbol. Aunque la diferencia respecto al Decision Tree fue pequeña, Random Forest obtuvo mejores resultados en las principales métricas.
+
+El **Decision Tree** también obtuvo un desempeño muy alto y fue el modelo más rápido durante la predicción, con **0.006383 segundos**. Sin embargo, el baseline mostró previamente señales de sobreajuste, por lo que se considera menos robusto que Random Forest para continuar el proyecto.
+
+El comportamiento de **KNN** también puede explicarse por las características del dataset. Aunque fue el modelo más rápido durante el entrenamiento, con **0.493749 segundos**, necesita calcular distancias entre las observaciones durante la predicción. Debido al tamaño del dataset, esto produjo un tiempo de predicción de **25.088361 segundos**, considerablemente mayor que el de los demás modelos.
+
+Por su parte, **Logistic Regression** obtuvo un Accuracy de **0.957346**, pero un F1-Macro de solamente **0.744948**. Esto se relaciona con el fuerte desbalance existente en `Attack_type`. Una Accuracy alta puede estar influenciada por la clase mayoritaria y no reflejar correctamente el comportamiento sobre las clases minoritarias. Por esta razón, F1-Macro y Recall son métricas más representativas para este problema.
+
+El desbalance del dataset es especialmente importante, ya que la clase mayoritaria representa una proporción mucho mayor de los registros que las clases minoritarias. Por ello, el uso de `class_weight="balanced"` en los modelos que lo permiten y la evaluación mediante F1-Macro permiten obtener una visión más equilibrada del desempeño.
+
+Finalmente, **Random Forest se selecciona como candidato principal para la siguiente etapa**, debido a que presentó el mejor equilibrio entre desempeño predictivo y costo computacional.
+
+**XGBoost no fue ejecutado debido a las limitaciones de tiempo del proyecto**, aunque la librería estaba disponible en el entorno. Por esta razón, no forma parte de la comparación ni de la selección realizada en esta etapa.
